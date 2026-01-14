@@ -24,22 +24,22 @@
 #define SAMPLES 128        // FFT采样点数 必须为2的幂
 #define SAMPLING_FREQ 4000 // 采样频率 (Hz)
 
-#define noiseFloor 30 // 噪声抑制 越大抑制程度越高
-#define dbMult 8.0    // 放大倍数 越大越灵敏
-#define peakFall 2.0  // 峰值线下落速度 越大下落越快
+#define noiseFloor 30  // 噪声抑制 越大抑制程度越高
+#define dbMult 8.0     // 放大倍数 越大越灵敏
+#define peakFall 2.0   // 峰值线下落速度 越大下落越快
+#define smoothUp 0.9   // 上升平滑系数 0~1 越大上升响应越快
+#define smoothDown 0.3 // 下降平滑系数 0~1 越大下降响应越快
 
 double globalMaxDb = 0.0;   // 过去一段时间最大分贝值
 double globalMaxFreq = 0.0; // 过去一段时间最大分贝值对应频率值
 uint16_t peakTimeInterval = 500;    // 峰值更新周期 (ms)
 uint8_t color_offset = 55;  // 颜色偏移 底部绿色 顶部红色
 
-double vReal[SAMPLES];         // FFT 输入输出数组
-double vImag[SAMPLES];         // FFT 输入输出数组
+double vReal[SAMPLES];         // FFT 输入数组
+double vImag[SAMPLES];         // FFT 输出数组
 double bandDb[BAND_NUM];       // 当前显示的频谱数据
 double oldBandDb[BAND_NUM];    // 上次显示的频谱数据
 double peakDb[BAND_NUM];       // 频谱顶点数据
-double smoothUp = 0.9;         // 上升平滑系数 0~1 越大上升响应越快
-double smoothDown = 0.3;       // 下降平滑系数 0~1 越大下降响应越快
 arduinoFFT FFT = arduinoFFT(); // FFT 对象
 
 int bin_indices[17] = { // 频段对应的 FFT bin 索引
