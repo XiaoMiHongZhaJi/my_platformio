@@ -16,7 +16,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define SAMPLES 128        // FFT采样点数 必须为2的幂
 #define SAMPLING_FREQ 4000 // 采样频率 (Hz)
 #define BAND_NUM 16        // 频段数量
-#define BLOCK_HIGHT 7      // 垂直方块高度
+#define BLOCK_HIGHT 5      // 垂直方块高度
 
 #define noiseFloor 60  // 噪声抑制 越大抑制程度越高
 #define dbMult 6.0     // 放大倍数 越大越灵敏
@@ -41,7 +41,7 @@ float globalMaxFreq = 0;         // 过去一段时间最大分贝值对应频�
 uint16_t peakTimeInterval = 500; // 峰值更新周期 (ms)
 
 void setup() {
-  Serial.begin(115200);
+  // Serial.begin(115200);
 
 #ifdef OLED_GND
   pinMode(OLED_GND, OUTPUT);
@@ -78,8 +78,7 @@ void loop() {
   for (int i = 0; i < SAMPLES; i++) {
     vReal[i] = (float)analogRead(MIC_ADC) - 2048.0;
     vImag[i] = 0;
-    while (micros() - start < delayMs)
-      ;
+    while (micros() - start < delayMs);
     start += delayMs;
   }
 
@@ -89,21 +88,21 @@ void loop() {
 
   display.clearDisplay();
 
-  // 2. 峰值信息展示 (格式化：数字右对齐)
-  float frameMax = 0;
-  int frameBin = 0;
-  for (int i = 4; i < SAMPLES / 2; i++) {
-    if (vReal[i] > frameMax) {
-      frameMax = vReal[i];
-      frameBin = i;
-    }
-  }
-
   unsigned long now = millis();
   if (now - lastPeakUpdate > peakTimeInterval) {
+    // 2. 峰值信息展示 (格式化：数字右对齐)
+    float frameMax = 0;
+    int frameBin = 0;
+    for (int i = 4; i < SAMPLES / 2; i++) {
+      if (vReal[i] > frameMax) {
+        frameMax = vReal[i];
+        frameBin = i;
+      }
+    }
     globalMaxDb = 20 * log10(frameMax + 1);
     globalMaxFreq = frameBin * (SAMPLING_FREQ / SAMPLES);
     lastPeakUpdate = now;
+    // Serial.printf("MaxDb: %.1f dB at %.1f Hz\n", globalMaxDb, globalMaxFreq);
   }
 
   display.setCursor(0, 0);
